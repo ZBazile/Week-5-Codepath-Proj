@@ -1,0 +1,91 @@
+/* #root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+} */
+
+.App {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+  max-width: 1200px; /* Set your desired maximum width for the content area */
+  margin: 20px auto; /* This centers the .App div horizontally */
+
+   background-color: #fff; /* The contrasting background */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+   min-height: calc(100vh - 40px); /* Adjust height to fill viewport minus margins */
+  display: flex;
+  flex-direction: column;
+
+  
+}
+
+.App-header {
+  background-color: #282c34;
+  padding: 20px;
+  color: white;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+h1 {
+   font-family: 'Resturantfont', serif;
+    
+    text-align: center;
+   font-size: 3em;
+  
+  margin: 0;
+}
+
+@font-face {
+    font-family: 'Resturantfont'; /* This is the name you'll use in your CSS */
+    src:
+        url('./assets/ResturantFont.ttf') format('truetype');
+         font-weight: normal; /* Define the weight for this specific file */
+    font-style: normal;  /* Define the style for this specific file */
+    
+     font-display: swap; 
+
+}
