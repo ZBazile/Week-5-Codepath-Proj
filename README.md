@@ -40,7 +40,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
- Video Walkthrough [ https://imgur.com/a/eTpTVd0] 
+ Video Walkthrough [ https://imgur.com/a/eTpTVd0]  as of  today (July 16th) My api limit has been reached so my cards will not display, but i will update on july 17th with everything working!
 
 <!-- Replace this with whatever GIF tool you used! -->
 GIF created with ...  IMGUR
