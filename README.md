@@ -1,4 +1,4 @@
-# Web Development Project 5 - *International Recipe Finder*
+# Web Development Project 5(WEEK 6) - *International Recipe Finder*
 
 Submitted by: **Zachary Bazile**
 
