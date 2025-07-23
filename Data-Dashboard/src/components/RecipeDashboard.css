@@ -60,3 +60,42 @@
   font-weight: bold;
   margin-top: 20px;
 }
+
+.chart-container {
+  margin-bottom: 30px;
+  text-align: center;
+  background-color: #f8f8f8; /* A light background for charts */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.chart-container h2 {
+  color: #333; /* Changed this to a darker color*/
+  margin-top: 0; 
+  margin-bottom: 20px; 
+}
+
+.chart-container h2 .search-query-display {
+  font-style: italic; 
+  color: #555; 
+  margin-left: 8px; /* Space from "Recipe Insights" */
+  font-weight: normal; 
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Adjust minmax for responsiveness */
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.chart-item {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+

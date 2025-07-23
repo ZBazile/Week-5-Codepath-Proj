@@ -49,3 +49,13 @@
 .recipe-detail span {
   margin-right: 5px;
 }
+
+/* July22nd edits*/
+
+
+.recipe-card-link {
+  text-decoration: none; /* Remove underline from the link */
+  color: inherit; /* Inherit text color from parent */
+  display: block; /* Make the link a block element to wrap the card */
+  height: 100%; /* Ensure the link takes the full height of the card for consistent clicking */
+}

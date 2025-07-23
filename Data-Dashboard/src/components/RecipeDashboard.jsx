@@ -2,124 +2,113 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import RecipeCard from './RecipeCard'; // No need for .jsx extension here
 import './RecipeDashboard.css';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  PieChart, Pie, Cell
+} from 'recharts'; // Import Recharts components
 
-// Access environment variable using import.meta.env
-const API_KEY = import.meta.env.VITE_SPOONACULAR_API_KEY;
-const BASE_URL = 'https://api.spoonacular.com/recipes/';
 
-function RecipeDashboard() {
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCuisine, setSelectedCuisine] = useState('');
-  const [totalRecipes, setTotalRecipes] = useState(0);
-  const [avgReadyTime, setAvgReadyTime] = useState(0);
-  const [maxReadyTime, setMaxReadyTime] = useState(0);
+function RecipeDashboard({ recipes, searchQuery }) { // Now receives recipes as a prop from App.jsx to make space here 
+  // Prepare data for charts: Prep Time 
+  const prepTimeData = recipes.reduce((acc, recipe) => {
+    const time = recipe.readyInMinutes;
+    if (time <= 15) acc['0-15 mins'] = (acc['0-15 mins'] || 0) + 1;
+    else if (time <= 30) acc['16-30 mins'] = (acc['16-30 mins'] || 0) + 1;
+    else if (time <= 45) acc['31-45 mins'] = (acc['31-45 mins'] || 0) + 1;
+    else acc['45+ mins'] = (acc['45+ mins'] || 0) + 1;
+    return acc;
+  }, {});
+  const chartPrepTimeData = Object.keys(prepTimeData).map(key => ({
+    name: key,
+    count: prepTimeData[key]
+  }));
 
-  // Define available cuisines for the filter
-  const cuisines = [
-    '', // Empty string for "All"
-    'African', 'Asian', 'American', 'British', 'Cajun', 'Caribbean',
-    'Chinese', 'Eastern European', 'European', 'French', 'German',
-    'Greek', 'Indian', 'Irish', 'Italian', 'Japanese', 'Jewish',
-    'Korean', 'Latin American', 'Mediterranean', 'Mexican', 'Middle Eastern',
-    'Nordic', 'Southern', 'Spanish', 'Thai', 'Vietnamese'
-  ];
+  // Prepare data for charts: Serving Size Distribution
+  const servingsData = recipes.reduce((acc, recipe) => {
+    const servings = recipe.servings;
+    if (servings === 1) acc['1 serving'] = (acc['1 serving'] || 0) + 1;
+    else if (servings >= 2 && servings <= 4) acc['2-4 servings'] = (acc['2-4 servings'] || 0) + 1;
+    else if (servings >= 5 && servings <= 8) acc['5-8 servings'] = (acc['5-8 servings'] || 0) + 1;
+    else if (servings > 8) acc['8+ servings'] = (acc['8+ servings'] || 0) + 1;
+    return acc;
+  }, {});
+  const chartServingsData = Object.keys(servingsData).map(key => ({
+    name: key,
+    value: servingsData[key]
+  }));
 
-  const fetchRecipes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      if (!API_KEY) {
-        throw new Error("Spoonacular API Key is not set. Please check your .env file.");
-      }
-
-      let url = `${BASE_URL}complexSearch?apiKey=${API_KEY}&number=20`; // Fetch more to allow for filtering
-      if (searchQuery) {
-        url += `&query=${searchQuery}`;
-      }
-      if (selectedCuisine) {
-        url += `&cuisine=${selectedCuisine}`;
-      }
-      url += `&addRecipeInformation=true`; // Get more details like readyInMinutes, servings
-
-      const response = await axios.get(url);
-      const fetchedRecipes = response.data.results;
-      setRecipes(fetchedRecipes);
-      setTotalRecipes(fetchedRecipes.length);
-
-      // Calculate summary statistics
-      if (fetchedRecipes.length > 0) {
-        const readyTimes = fetchedRecipes.map(recipe => recipe.readyInMinutes || 0).filter(time => time > 0);
-        if (readyTimes.length > 0) {
-          const sumReadyTime = readyTimes.reduce((acc, time) => acc + time, 0);
-          setAvgReadyTime(Math.round(sumReadyTime / readyTimes.length));
-          setMaxReadyTime(Math.max(...readyTimes));
-        } else {
-          setAvgReadyTime(0);
-          setMaxReadyTime(0);
-        }
-      } else {
-        setAvgReadyTime(0);
-        setMaxReadyTime(0);
-      }
-
-    } catch (err) {
-      console.error("Error fetching recipes:", err);
-      setError(err.message || "Failed to fetch recipes. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  }, [searchQuery, selectedCuisine]);
-
-  useEffect(() => {
-    fetchRecipes();
-  }, [fetchRecipes]);
+  const PIE_COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042']; // Colors for pie chart segments
 
   return (
     <div className="recipe-dashboard">
-      <div className="controls">
-        <input
-          type="text"
-          placeholder="Search recipes..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-bar"
-        />
-        <select
-          value={selectedCuisine}
-          onChange={(e) => setSelectedCuisine(e.target.value)}
-          className="cuisine-filter"
-        >
-          <option value="">All Cuisines</option>
-          {cuisines.map((cuisine) => (
-            <option key={cuisine} value={cuisine}>{cuisine || 'All'}</option>
-          ))}
-        </select>
+      <div className="chart-container">
+        {/* for added search query  */}
+        <h2>
+          Recipe Insights 
+          {searchQuery && <span className="search-query-display"> for "{searchQuery}"</span>}    
+        </h2>
+        <div className="charts-grid">
+          <div className="chart-item">
+            <h3>Preparation Time Distribution</h3>
+            {chartPrepTimeData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartPrepTimeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" fill="#8884d8" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p>No data for preparation time chart.</p>
+            )}
+          </div>
+
+          <div className="chart-item">
+            <h3>Serving Size Distribution</h3>
+            {chartServingsData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartServingsData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                  >
+                    {chartServingsData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p>No data for serving size chart.</p>
+            )}
+          </div>
+        </div>
       </div>
-
-      <div className="summary-statistics">
-        <h3>Summary Statistics</h3>
-        <p>Total Recipes Displayed: {totalRecipes}</p>
-        <p>Average Preparation Time: {avgReadyTime} minutes</p>
-        <p>Longest Preparation Time: {maxReadyTime} minutes</p>
-      </div>
-
-      {loading && <p>Loading recipes...</p>}
-      {error && <p className="error-message">{error}</p>}
-
-      {!loading && recipes.length === 0 && !error && (
-        <p>No recipes found matching your criteria.</p>
-      )}
 
       <div className="recipe-list">
-        {!loading && recipes.length > 0 && recipes.map(recipe => (
-          <RecipeCard key={recipe.id} recipe={recipe} />
-        ))}
+        {recipes.length > 0 ? (
+          recipes.map(recipe => (
+            <RecipeCard key={recipe.id} recipe={recipe} />
+          ))
+        ) : (
+          <p>No recipes to display from dashboard.</p>
+        )}
       </div>
     </div>
   );
 }
 
 export default RecipeDashboard;
+
+
